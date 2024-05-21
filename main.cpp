@@ -21,6 +21,7 @@ int getPreviousPayload(Lista*& list);
 void removeid(Lista*& list, int id);
 void deleteCircularList(Lista*& list);
 Lista* mergeLists(Lista* list1, Lista* list2);
+bool hasloop(Node* head);
 
 using namespace std;
 
