@@ -1,5 +1,4 @@
 #include <iostream>
-using namespace std;
 
 typedef struct Node
 {
@@ -21,9 +20,9 @@ int getNextPayload(Lista*& list);
 int getPreviousPayload(Lista*& list);
 void removeid(Lista*& list, int id);
 void deleteCircularList(Lista*& list);
-Lista* fusao(Lista* list1, Lista* list2);
+Lista* mergeLists(Lista* list1, Lista* list2);
 
-
+using namespace std;
 
 int main() {
     int array[] = {1 , 2 , 3 ,4 ,5 };
@@ -50,14 +49,16 @@ int main() {
     deleteCircularList(myhead);
 
     //display(myhead); // Tratar caso de lista null
-    int array1[] = {1,3,5,6,7};
-    int array2[] = {2,3,9,8,4};
+    int array1[] = {1,3,5,6,7,6,8};
+    int array2[] = {2,3,9,8,4,};
     Lista* list1 = newCircularList(array1,5);
     Lista* list2 = newCircularList(array2,5);
-    Lista* listafusao = fusao(list1,list2);
+    Lista* listafusao = mergeLists(list1,list2);
     cout << "Lista fusion: ";
     display(listafusao);
     cout << endl;
+    int arrayWithLoop[] = {1, 2, 3, 4, 5};
+
     cout << "fim";
 
     return 0;
@@ -168,50 +169,54 @@ void deleteCircularList(Lista*& list)
     list = nullptr;
 }
 
-// Função para juntar duas listas circulares em uma única lista circular, intercalando um iPayload de cada lista
-Lista* fusao(Lista* list1, Lista* list2)
+Lista* mergeLists(Lista* list1, Lista* list2)
 {
+    if (list1 == nullptr) return list2; // tratar casos
+    if (list2 == nullptr) return list1; // de null pointer
 
-    Lista* mergedList = (Lista*) malloc(sizeof(Lista));
-    mergedList->head = nullptr;
+    Lista* mergedList = (Lista*) malloc(sizeof(Lista)); // crio ponteiro de lista
+    mergedList->head = nullptr; // set head como null
 
-    Node* current1 = list1->head;
-    Node* current2 = list2->head;
+    Node* currenty1 = list1->head;  // 
+    Node* currenty2 = list2->head;
 
-    Node* tail = nullptr;
-
-    // Percorre as duas listas enquanto houver nós em pelo menos uma delas
-    do {
-        if (current1 != nullptr) {
-            // Adiciona um nó da primeira lista à lista mesclada
-            if (mergedList->head == nullptr) {
-                mergedList->head = newNode(current1->iPayload);
-                tail = mergedList->head;
-            } else {
-                tail->ptrNext = newNode(current1->iPayload);
-                tail->ptrNext->ptrPrev = tail;
-                tail = tail->ptrNext;
-            }
-            current1 = current1->ptrNext;
-        }
-
-        if (current2 != nullptr) {
-            // Adiciona um nó da segunda lista à lista mesclada
-            if (mergedList->head == nullptr) {
-                mergedList->head = newNode(current2->iPayload);
-                tail = mergedList->head;
-            } else {
-                tail->ptrNext = newNode(current2->iPayload);
-                tail->ptrNext->ptrPrev = tail;
-                tail = tail->ptrNext;
-            }
-            current2 = current2->ptrNext;
-        }
-    } while (current1 != list1->head || current2 != list2->head);
-
-    // Torna a lista mesclada circular
-    tail->ptrNext = mergedList->head;
-    mergedList->head->ptrPrev = tail;
+    Node* aux1 = currenty1->ptrPrev;
+    Node* aux2 = currenty2->ptrPrev;
+    
+     // conecto todas as listas uma nas outras
+    mergedList->head = currenty1; 
+    // faco mergedlist = list1
+    aux1->ptrNext = currenty2; 
+    currenty2->ptrPrev = aux1; 
+    // conecto o fim da mergedlist com o comeco da lista 2
+    aux2->ptrNext = currenty1; 
+    currenty1->ptrPrev = aux2;
 
     return mergedList;
+}
+
+
+bool hasLoop(Node* head)
+{
+    if (head == nullptr) // verificaaar se lsita nao eh nula
+    {
+        cout << "null list" << endl;
+        return false;
+    }
+
+    Node* temp1 = head; // criar temps
+    Node* temp2 = head; //
+
+    while (temp2 != nullptr && temp2->ptrNext != nullptr)
+    {
+        temp1 = temp1->ptrNext;
+        temp2 = temp2->ptrNext->ptrNext;
+
+        if (temp1 == temp2) // o nó é igual ao next dele mesmo
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
